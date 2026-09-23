@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Expense Tracker</title>
+    <!-- Google Fonts: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header / Total Display -->
+        <header class="glass-panel text-center">
+            <h1>Expense Tracker</h1>
+            <p class="subtitle">Keep track of your spending</p>
+            <div class="total-balance-container">
+                <h2>Total Balance</h2>
+                <h1 id="total-balance">$0.00</h1>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main>
+            <!-- Add Expense Form -->
+            <section class="glass-panel form-section">
+                <h3>Add New Expense</h3>
+                <form id="expense-form">
+                    <input type="hidden" id="expense-id">
+                    
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <input type="text" id="description" placeholder="e.g., Groceries" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="amount">Amount ($)</label>
+                            <input type="number" id="amount" placeholder="0.00" step="0.01" min="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="category">Category</label>
+                            <select id="category" required>
+                                <option value="" disabled selected>Select Category</option>
+                                <option value="Food 🍔">Food 🍔</option>
+                                <option value="Transport 🚗">Transport 🚗</option>
+                                <option value="Utilities ⚡">Utilities ⚡</option>
+                                <option value="Entertainment 🎬">Entertainment 🎬</option>
+                                <option value="Shopping 🛍️">Shopping 🛍️</option>
+                                <option value="Other 📦">Other 📦</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" id="date" required>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="primary-btn">Add Expense</button>
+                    <button type="button" id="cancel-edit-btn" class="secondary-btn hidden">Cancel Edit</button>
+                </form>
+            </section>
+
+            <!-- Expense List -->
+            <section class="expense-list-section">
+                <h3>Recent Transactions</h3>
+                <div id="expense-list" class="expense-list">
+                    <!-- Expenses will be dynamically injected here -->
+                </div>
+                <div id="empty-state" class="empty-state">
+                    <p>No expenses yet. Start adding some!</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
