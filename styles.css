@@ -302,3 +302,21 @@ button {
         justify-content: space-between;
     }
 }
+
+/* Reminders Styles */
+.reminder-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: var(--accent-color);
+}
+
+.completed {
+    opacity: 0.6;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.completed-text {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+}

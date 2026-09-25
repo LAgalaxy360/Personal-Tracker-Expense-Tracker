@@ -72,6 +72,29 @@
                     <p>No expenses yet. Start adding some!</p>
                 </div>
             </section>
+
+            <!-- Reminders Section -->
+            <section class="reminder-section glass-panel" style="margin-top: 1.5rem;">
+                <h3>Reminders</h3>
+                <form id="reminder-form" class="reminder-form">
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 2; margin-bottom: 0;">
+                            <input type="text" id="reminder-desc" placeholder="Remind me to pay bills..." required>
+                        </div>
+                        <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                            <input type="date" id="reminder-date" required>
+                        </div>
+                    </div>
+                    <button type="submit" id="reminder-submit-btn" class="primary-btn">Add Reminder</button>
+                </form>
+
+                <div id="reminder-list" class="expense-list" style="margin-top: 1.5rem;">
+                    <!-- Reminders will be dynamically injected here -->
+                </div>
+                <div id="reminder-empty-state" class="empty-state" style="margin-top: 1.5rem;">
+                    <p>No reminders yet.</p>
+                </div>
+            </section>
         </main>
     </div>
 

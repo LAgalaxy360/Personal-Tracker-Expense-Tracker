@@ -11,9 +11,17 @@ const expenseList = document.getElementById('expense-list');
 const totalBalanceEl = document.getElementById('total-balance');
 const emptyStateEl = document.getElementById('empty-state');
 
+// Reminder DOM Elements
+const reminderForm = document.getElementById('reminder-form');
+const reminderDescInput = document.getElementById('reminder-desc');
+const reminderDateInput = document.getElementById('reminder-date');
+const reminderList = document.getElementById('reminder-list');
+const reminderEmptyStateEl = document.getElementById('reminder-empty-state');
+
 // State
 let expenses = [];
 let isEditing = false;
+let reminders = [];
 
 // Initialize App
 function init() {
@@ -26,7 +34,13 @@ function init() {
         expenses = JSON.parse(storedExpenses);
     }
 
+    const storedReminders = localStorage.getItem('reminders');
+    if (storedReminders) {
+        reminders = JSON.parse(storedReminders);
+    }
+
     renderExpenses();
+    renderReminders();
 }
 
 // Render Expenses to DOM
@@ -201,9 +215,105 @@ function escapeHTML(str) {
     return div.innerHTML;
 }
 
+// --- Reminder Logic ---
+
+function renderReminders() {
+    reminderList.innerHTML = '';
+
+    if (reminders.length === 0) {
+        reminderEmptyStateEl.classList.remove('hidden');
+        reminderList.classList.add('hidden');
+    } else {
+        reminderEmptyStateEl.classList.add('hidden');
+        reminderList.classList.remove('hidden');
+
+        // Sort by date ascending (closest first)
+        const sortedReminders = [...reminders].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        sortedReminders.forEach(reminder => {
+            const reminderItem = document.createElement('div');
+            reminderItem.classList.add('expense-item');
+            if (reminder.completed) {
+                reminderItem.classList.add('completed');
+            }
+            
+            const dateObj = new Date(reminder.date);
+            const formattedDate = dateObj.toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                timeZone: 'UTC'
+            });
+
+            reminderItem.innerHTML = `
+                <div class="expense-info" style="flex-direction: row; align-items: center; gap: 1rem;">
+                    <input type="checkbox" ${reminder.completed ? 'checked' : ''} onchange="toggleReminder('${reminder.id}')" class="reminder-checkbox">
+                    <div style="display: flex; flex-direction: column;">
+                        <span class="expense-desc ${reminder.completed ? 'completed-text' : ''}">${escapeHTML(reminder.description)}</span>
+                        <div class="expense-meta">
+                            <span class="expense-date">Due: ${formattedDate}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-btns">
+                    <button class="icon-btn delete-btn" onclick="deleteReminder('${reminder.id}')" aria-label="Delete">🗑️</button>
+                </div>
+            `;
+            reminderList.appendChild(reminderItem);
+        });
+    }
+}
+
+function handleReminderSubmit(e) {
+    e.preventDefault();
+
+    const desc = reminderDescInput.value.trim();
+    const date = reminderDateInput.value;
+
+    if (!desc || !date) {
+        alert('Please fill in all reminder fields');
+        return;
+    }
+
+    const newReminder = {
+        id: generateID(),
+        description: desc,
+        date: date,
+        completed: false
+    };
+
+    reminders.push(newReminder);
+    saveReminders();
+    renderReminders();
+    
+    reminderForm.reset();
+}
+
+window.toggleReminder = function(id) {
+    const reminder = reminders.find(r => r.id === id);
+    if (reminder) {
+        reminder.completed = !reminder.completed;
+        saveReminders();
+        renderReminders();
+    }
+};
+
+window.deleteReminder = function(id) {
+    if (confirm('Are you sure you want to delete this reminder?')) {
+        reminders = reminders.filter(r => r.id !== id);
+        saveReminders();
+        renderReminders();
+    }
+};
+
+function saveReminders() {
+    localStorage.setItem('reminders', JSON.stringify(reminders));
+}
+
 // Event Listeners
 expenseForm.addEventListener('submit', handleFormSubmit);
 cancelEditBtn.addEventListener('click', cancelEditMode);
+reminderForm.addEventListener('submit', handleReminderSubmit);
 
 // Boot App
 init();
