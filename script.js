@@ -10,6 +10,9 @@ const cancelEditBtn = document.getElementById('cancel-edit-btn');
 const expenseList = document.getElementById('expense-list');
 const totalBalanceEl = document.getElementById('total-balance');
 const emptyStateEl = document.getElementById('empty-state');
+const chartSection = document.getElementById('chart-section');
+const chartCtx = document.getElementById('expense-chart');
+let expenseChart;
 
 // Reminder DOM Elements
 const reminderForm = document.getElementById('reminder-form');
@@ -39,6 +42,7 @@ function init() {
         reminders = JSON.parse(storedReminders);
     }
 
+    initChart();
     renderExpenses();
     renderReminders();
 }
@@ -94,6 +98,7 @@ function renderExpenses() {
     }
 
     updateTotal();
+    updateChart();
 }
 
 // Add or Update Expense
@@ -198,6 +203,76 @@ function updateTotal() {
     const total = expenses.reduce((acc, expense) => acc + parseFloat(expense.amount), 0);
     totalBalanceEl.textContent = `$${total.toFixed(2)}`;
 }
+
+// Initialize Chart
+function initChart() {
+    if (!chartCtx) return;
+    
+    // Set default Chart.js font family and color
+    Chart.defaults.font.family = "'Outfit', sans-serif";
+    Chart.defaults.color = '#94a3b8';
+    
+    expenseChart = new Chart(chartCtx, {
+        type: 'doughnut',
+        data: {
+            labels: [],
+            datasets: [{
+                data: [],
+                backgroundColor: [
+                    'rgba(139, 92, 246, 0.8)', // accent
+                    'rgba(16, 185, 129, 0.8)', // success
+                    'rgba(239, 68, 68, 0.8)', // danger
+                    'rgba(245, 158, 11, 0.8)', // warning
+                    'rgba(59, 130, 246, 0.8)', // blue
+                    'rgba(236, 72, 153, 0.8)'  // pink
+                ],
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        color: '#f8fafc',
+                        padding: 20
+                    }
+                }
+            },
+            cutout: '70%'
+        }
+    });
+}
+
+// Update Chart Data
+function updateChart() {
+    if (!expenseChart) return;
+
+    if (expenses.length === 0) {
+        chartSection.style.display = 'none';
+        return;
+    }
+    
+    chartSection.style.display = 'block';
+
+    const categoryTotals = {};
+    expenses.forEach(exp => {
+        const cat = exp.category || 'Other';
+        if (categoryTotals[cat]) {
+            categoryTotals[cat] += parseFloat(exp.amount);
+        } else {
+            categoryTotals[cat] = parseFloat(exp.amount);
+        }
+    });
+
+    expenseChart.data.labels = Object.keys(categoryTotals);
+    expenseChart.data.datasets[0].data = Object.values(categoryTotals);
+    expenseChart.update();
+}
+
 // Save to Local Storage
 function saveToLocalStorage() {
     localStorage.setItem('expenses', JSON.stringify(expenses));
