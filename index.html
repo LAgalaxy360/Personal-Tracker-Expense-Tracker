@@ -19,6 +19,16 @@
             <div class="total-balance-container">
                 <h2>Total Balance</h2>
                 <h1 id="total-balance">$0.00</h1>
+                <div class="summary-cards" style="display: flex; justify-content: space-around; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(139, 92, 246, 0.2);">
+                    <div>
+                        <h3 style="font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase;">Income</h3>
+                        <p id="total-income" style="color: var(--success-color); font-weight: bold; font-size: 1.5rem;">$0.00</p>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase;">Expense</h3>
+                        <p id="total-expense" style="color: var(--danger-color); font-weight: bold; font-size: 1.5rem;">$0.00</p>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -37,21 +47,29 @@
 
                     <div class="form-row">
                         <div class="form-group">
+                            <label for="type">Type</label>
+                            <select id="type" required>
+                                <option value="expense">Expense</option>
+                                <option value="income">Income</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label for="amount">Amount ($)</label>
                             <input type="number" id="amount" placeholder="0.00" step="0.01" min="0.01" required>
                         </div>
-                        <div class="form-group">
-                            <label for="category">Category</label>
-                            <select id="category" required>
-                                <option value="" disabled selected>Select Category</option>
-                                <option value="Food 🍔">Food 🍔</option>
-                                <option value="Transport 🚗">Transport 🚗</option>
-                                <option value="Utilities ⚡">Utilities ⚡</option>
-                                <option value="Entertainment 🎬">Entertainment 🎬</option>
-                                <option value="Shopping 🛍️">Shopping 🛍️</option>
-                                <option value="Other 📦">Other 📦</option>
-                            </select>
-                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" required>
+                            <option value="" disabled selected>Select Category</option>
+                            <option value="Salary 💰">Salary 💰</option>
+                            <option value="Food 🍔">Food 🍔</option>
+                            <option value="Transport 🚗">Transport 🚗</option>
+                            <option value="Utilities ⚡">Utilities ⚡</option>
+                            <option value="Entertainment 🎬">Entertainment 🎬</option>
+                            <option value="Shopping 🛍️">Shopping 🛍️</option>
+                            <option value="Other 📦">Other 📦</option>
+                        </select>
                     </div>
 
                     <div class="form-group">

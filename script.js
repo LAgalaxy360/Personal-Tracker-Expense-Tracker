@@ -1,6 +1,7 @@
 // DOM Elements
 const expenseForm = document.getElementById('expense-form');
 const descriptionInput = document.getElementById('description');
+const typeInput = document.getElementById('type');
 const amountInput = document.getElementById('amount');
 const categoryInput = document.getElementById('category');
 const dateInput = document.getElementById('date');
@@ -9,6 +10,8 @@ const submitBtn = document.getElementById('submit-btn');
 const cancelEditBtn = document.getElementById('cancel-edit-btn');
 const expenseList = document.getElementById('expense-list');
 const totalBalanceEl = document.getElementById('total-balance');
+const totalIncomeEl = document.getElementById('total-income');
+const totalExpenseEl = document.getElementById('total-expense');
 const emptyStateEl = document.getElementById('empty-state');
 const chartSection = document.getElementById('chart-section');
 const chartCtx = document.getElementById('expense-chart');
@@ -86,7 +89,7 @@ function renderExpenses() {
                     </div>
                 </div>
                 <div class="expense-amount-actions">
-                    <span class="expense-amount">$${parseFloat(expense.amount).toFixed(2)}</span>
+                    <span class="expense-amount" style="color: ${expense.type === 'income' ? 'var(--success-color)' : 'var(--danger-color)'}">${expense.type === 'income' ? '+' : '-'}$${parseFloat(expense.amount).toFixed(2)}</span>
                     <div class="action-btns">
                         <button class="icon-btn edit-btn" onclick="editExpense('${expense.id}')" aria-label="Edit">✏️</button>
                         <button class="icon-btn delete-btn" onclick="deleteExpense('${expense.id}')" aria-label="Delete">🗑️</button>
@@ -108,6 +111,7 @@ function handleFormSubmit(e) {
     const desc = descriptionInput.value.trim();
     const amount = amountInput.value.trim();
     const category = categoryInput.value;
+    const type = typeInput.value;
     const date = dateInput.value;
     const id = expenseIdInput.value;
 
@@ -125,6 +129,7 @@ function handleFormSubmit(e) {
                 description: desc,
                 amount: parseFloat(amount),
                 category,
+                type,
                 date
             };
         }
@@ -138,6 +143,7 @@ function handleFormSubmit(e) {
             description: desc,
             amount: parseFloat(amount),
             category,
+            type,
             date
         };
         expenses.push(newExpense);
@@ -163,6 +169,7 @@ window.editExpense = function(id) {
     descriptionInput.value = expense.description;
     amountInput.value = expense.amount;
     categoryInput.value = expense.category;
+    typeInput.value = expense.type || 'expense';
     dateInput.value = expense.date;
     expenseIdInput.value = expense.id;
 
@@ -200,8 +207,21 @@ function cancelEditMode() {
 }
 
 function updateTotal() {
-    const total = expenses.reduce((acc, expense) => acc + parseFloat(expense.amount), 0);
-    totalBalanceEl.textContent = `$${total.toFixed(2)}`;
+    let income = 0;
+    let expense = 0;
+    
+    expenses.forEach(item => {
+        if (item.type === 'income') {
+            income += parseFloat(item.amount);
+        } else {
+            expense += parseFloat(item.amount);
+        }
+    });
+    
+    const total = income - expense;
+    totalBalanceEl.textContent = `${total >= 0 ? '' : '-'}$${Math.abs(total).toFixed(2)}`;
+    totalIncomeEl.textContent = `+$${income.toFixed(2)}`;
+    totalExpenseEl.textContent = `-$${expense.toFixed(2)}`;
 }
 
 // Initialize Chart
@@ -251,7 +271,8 @@ function initChart() {
 function updateChart() {
     if (!expenseChart) return;
 
-    if (expenses.length === 0) {
+    const hasExpenses = expenses.some(exp => exp.type !== 'income');
+    if (!hasExpenses) {
         chartSection.style.display = 'none';
         return;
     }
@@ -260,6 +281,7 @@ function updateChart() {
 
     const categoryTotals = {};
     expenses.forEach(exp => {
+        if (exp.type === 'income') return; // Only chart expenses
         const cat = exp.category || 'Other';
         if (categoryTotals[cat]) {
             categoryTotals[cat] += parseFloat(exp.amount);
